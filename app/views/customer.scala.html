@@ -1,0 +1,51 @@
+@(nav : String, customers : List[models.Pojos.Customer], pageIndex : Int, pageCount : Int, pagePrefix : String, all: Boolean = false, liked: String = "")
+
+@import models.Constant._
+@import models.Pojos._
+@import util.CommonUtil
+
+@main(title(nav), nav) {
+    <script>
+    post(function(){
+    	
+    });
+    </script>
+    <div class="span9">
+	    <ul class="nav nav-pills" style="margin-bottom:0px; display: inline-block">
+	    <li @if(all){class="disabled"}><a href="/customer">全部客户</a></li>
+	    <li><a href="/customer/insert">添加客户</a></li>
+	    </ul>
+	    <form action="/customer" method="GET" class="navbar-search pull-right" style="margin-top: 0px"><input id="liked" name="liked" type="text" class="search-query" placeholder="输入客户名或电话号码" value="@liked"></form>
+	</div>
+	@if(0 == customers.length){
+	<div class="span9"><p class="well well-large">没有客户数据</p></div>
+	}else{
+		<div class="span9"><table class="table table-hover table-striped">
+		<thead><tr>
+		<th>客户姓名</th>
+		<th>性别</th>
+		<th>积分</th>
+		<th>款项</th>
+		<th>联系方式</th>
+		<th>&nbsp;</th>
+		</tr></thead>
+		<tbody>
+		@for(customer <- customers){
+		<tr>
+		<td>@customer.name</td>
+		<td>@Constant.sex(customer.sex)</td>
+		<td>@customer.credit</td>
+		<td>¥@util.CommonUtil.format(customer.money/100.0)</td>
+		<td>@customer.mobile</td>
+		<td>
+		<a href="@routes.Application.sellhistory(customerId=customer.id)">购物历史</a>&nbsp;&nbsp;
+		<a href="@routes.Application.updateCustomer(customer.id)">编辑</a>&nbsp;&nbsp;
+		<a href="@routes.Application.showCustomer(customer.id)">详情&gt;&gt;</a></td>
+		
+		</tr>
+		}
+		</tbody>
+		</table></div>
+		<div class="span9">@pager(pageCount, pageIndex, pagePrefix, "goto")</div>
+	}
+}

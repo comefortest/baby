@@ -1,0 +1,73 @@
+@(nav : String, supplier : models.Pojos.Supplier, changes : List[models.Pojos.Change])
+
+@import models.Constant._
+@import models.Pojos._
+@import util.CommonUtil
+
+@main(title(nav), nav) {
+    <script>
+    post(function(){
+    	
+    });
+    </script>
+    <div class="span9">
+	    <ul class="nav nav-pills" style="margin-bottom:0px">
+	    <li><a href="/supplier">全部供货商</a></li>
+	    <li><a href="/supplier/insert">添加供货商</a></li>
+	    </ul>
+	</div>
+	<div class="span9">
+	<h3 style="display:inline; padding:0px; margin:0px; vertical-align:bottom; padding-left:8px">@supplier.supplierName</h5>
+	<ul class="nav nav-pills" style="margin:0px; display:inline-block; padding:0px; vertical-align:bottom">
+	<li><a href="@routes.Application.buyhistory(supplierId=supplier.id)">进货历史</a></li>
+    <li class="disabled"><a href="@routes.Application.showSupplier(supplier.id)">详情</a></li>
+    <li><a href="@routes.Application.billSupplier(supplier.id)">变更帐务</a></li>
+    <li><a href="@routes.Application.updateSupplier(supplier.id)">编辑</a></li>
+    </ul>
+	</div>
+	<div class="span9"><table class="table table-hover table-striped" style=" padding-left:12px">
+		<thead><tr>
+		<th>供货商名称</th>
+		<th>联系人</th>
+		<th>联系方式</th>
+		<th>进货积分</th>
+		<th>款项</th>
+		<th>添加时间</th>
+		<th>&nbsp;</th>
+		</tr></thead>
+		<tbody>
+		<tr>
+		<td>@supplier.supplierName</td>
+		<td>@supplier.linkman</td>
+		<td>@supplier.contact</td>
+		<td>@supplier.credit</td>
+		<td>¥@util.CommonUtil.format(supplier.money/100.0)</td>
+		<td>@CommonUtil.format1(supplier.createTime)</td>
+		</tr>
+		</tbody>
+	</table></div>
+	@if(0 == changes.length){
+	<div class="span9"><p class="well">没有账务历史数据</p></div>
+	}else{
+		<div class="span9"><table class="table table-hover table-striped">
+		<thead><tr>
+		<th>进货积分</th>
+		<th>款项</th>
+		<th>变更时间</th>
+		<th>变更原因</th>
+		<th>备注</th>
+		</tr></thead>
+		<tbody>
+		@for(change <- changes){
+		<tr>
+		<td>@change.credit</td>
+		<td>¥@util.CommonUtil.format(change.money/100.0)</td>
+		<td>@CommonUtil.format1(change.opTime)</td>
+		<td>@models.Constant.SupplierChangeCause(change.cause)</td>
+		<td>@change.remark</td>
+		</tr>
+		}
+		</tbody>
+		</table></div>
+	}
+}

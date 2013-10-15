@@ -1,0 +1,14 @@
+@(nav: String, msg: String, target: String)
+
+@import models.Constant._
+
+@main(title(nav), nav) {
+    <script>
+    post(function(){
+    	setInterval(function(){window.location = "@target"}, 2000);
+    });
+    </script>
+    <div class="span9">
+    	<p class="well">@msg<br>3秒后将自动跳转. 若浏览器没有反应, <a href="@target">请点此手动跳转</a></p>
+    </div>
+}

@@ -1,0 +1,37 @@
+@(nav : String, form : Form[models.Pojos.Change])
+
+@import models.Constant._
+@import models.Pojos._
+@import util.CommonUtil
+@import util.CommonUtil.textareaField1
+
+@main(title(nav), nav) {
+    <script>
+    post(function(){
+    	
+    });
+    </script>
+    <div class="span9">
+	    <ul class="nav nav-pills" style="margin-bottom:0px">
+	    <li><a href="/fund">店铺当前账务</a></li>
+	    <li><a href="/fund/history">店铺账务历史</a></li>
+	    <li class="disabled"><a href="/fund/bill">变更店铺账务</a></li>
+	    </ul>
+	</div>
+	<div class="span9">
+	@helper.form(action = routes.Application.billFund1) {
+		@helper.inputText(form("money"), '_label -> "款项(单位 : 分)", '_help -> "本次账务变更涉及到的款项, 以[分]为单位, 正数表示店铺 进账, 负数表示店铺出账. <br>该项会自动计算到店铺总账务中")
+		@views.html.select(
+                form("cause"), 
+                options1 = (for(x <- models.Constant.FundChangeCause if x._1 != 0)yield (x._1.toString, x._2)).toList.sortWith((x, y) => x._1.toInt < y._1.toInt),
+                '_default -> (0, "请选择变更原因"),
+                '_label -> "变更原因", 
+                '_help -> "变更原因选择[其他]时, 请务必在下面的[备注]内详细说明"
+            )
+		@helper.inputText(form("remark"), '_label -> "备注(必填)", '_help -> "补充说明本次帐务变更")
+	    <div class="actions">
+			<input type="submit" class="btn btn-primary" value="保 存">
+		</div>
+	}
+	</div>
+}

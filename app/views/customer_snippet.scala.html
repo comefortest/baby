@@ -1,0 +1,33 @@
+@(customers : List[models.Pojos.Customer])
+
+@import models.Constant._
+@import models.Pojos._
+@import util.CommonUtil
+
+@if(0 == customers.length){
+<div style="margin: 0px"><p class="well well-large">没有更多客户数据</p></div>
+}else{
+	<div style="margin: 0px"><table class="table table-hover table-striped">
+	<thead><tr>
+	<th>&nbsp;</th>
+	<th>姓名</th>
+	<th>性别</th>
+	<th>积分</th>
+	<th>款项</th>
+	<th>联系方式</th>
+	</tr></thead>
+	<tbody>
+	@for(customer <- customers){
+	<tr>
+	<td><input type="radio" name="select_customer" value="@customer.id" class="selectCustomer" customer_name="@customer.name"></td>
+	<td>@customer.name</td>
+	<td>@Constant.sex(customer.sex)</td>
+	<td>@customer.credit</td>
+	<td>¥@util.CommonUtil.format(customer.money/100.0)</td>
+	<td>@customer.mobile</td>
+	</tr>
+	}
+	</tbody>
+	</table></div>
+}
+

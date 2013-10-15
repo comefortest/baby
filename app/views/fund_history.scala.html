@@ -1,0 +1,42 @@
+@(nav : String, changes : List[models.Pojos.Change])
+
+@import models.Constant._
+@import models.Pojos._
+@import util.CommonUtil
+
+@main(title(nav), nav) {
+    <script>
+    post(function(){
+    	
+    });
+    </script>
+    <div class="span9">
+	    <ul class="nav nav-pills" style="margin-bottom:0px">
+	    <li><a href="/fund">店铺当前账务</a></li>
+	    <li class="disabled"><a href="/fund/history">店铺账务历史</a></li>
+	    <li><a href="/fund/bill">变更店铺账务</a></li>
+	    </ul>
+	</div>
+	@if(0 == changes.length){
+	<div class="span9"><p class="well">没有账务历史数据</p></div>
+	}else{
+		<div class="span9"><table class="table table-hover table-striped">
+		<thead><tr>
+		<th>款项</th>
+		<th>变更时间</th>
+		<th>变更原因</th>
+		<th>备注</th>
+		</tr></thead>
+		<tbody>
+		@for(change <- changes){
+		<tr>
+		<td>¥@util.CommonUtil.format(change.money/100.0)</td>
+		<td>@CommonUtil.format1(change.opTime)</td>
+		<td>@models.Constant.FundChangeCause(change.cause)</td>
+		<td>@change.remark</td>
+		</tr>
+		}
+		</tbody>
+		</table></div>
+	}
+}

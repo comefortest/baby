@@ -1,0 +1,64 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                           controllers.Application.index
+
+GET     /customer                           controllers.Application.customer(liked: Option[String])
+GET     /customer/snippet                           controllers.Application.customerSnippet(liked: Option[String])
+GET     /customer/show/:id                           controllers.Application.showCustomer(id: Long)
+GET     /customer/insert                           controllers.Application.insertCustomer
+POST     /customer/insert1                           controllers.Application.insertCustomer1
+GET     /customer/bill/:id                           controllers.Application.billCustomer(id: Long)
+POST     /customer/bill1/:id                           controllers.Application.billCustomer1(id: Long)
+GET     /customer/update/:id                           controllers.Application.updateCustomer(id: Long)
+POST     /customer/update1/:id                           controllers.Application.updateCustomer1(id: Long)
+
+GET     /sell                           controllers.Application.sell
+POST     /sell1                           controllers.Application.sell1
+GET     /sellhistory                           controllers.Application.sellhistory(customerId: Long ?= 0, goodsId: Long ?= 0)
+
+GET     /goods                           controllers.Application.goods
+GET     /goods/insert                           controllers.Application.insertGoods
+POST     /goods/insert                           controllers.Application.insertGoods1
+GET     /goods/show/:id                           controllers.Application.showGoods(id: Long)
+GET     /goods/update/:id                           controllers.Application.updateGoods(id: Long)
+POST     /goods/update1/:id                           controllers.Application.updateGoods1(id: Long)
+GET     /goods/updatemetadata/:id                           controllers.Application.updateGoodsMetadata(id: Long)
+POST     /goods/updatemetadata1/:id                           controllers.Application.updateGoodsMetadata1(id: Long)
+
+GET     /buy                           controllers.Application.buy
+POST     /buy1                           controllers.Application.buy1
+GET     /buyhistory                           controllers.Application.buyhistory(supplierId: Long ?= 0, goodsId: Long ?= 0)
+
+GET     /brand                           controllers.Application.brand
+POST     /brand                           controllers.Application.insertBrand
+POST     /brand/update                           controllers.Application.updateBrand
+
+GET     /supplier                           controllers.Application.supplier
+GET     /supplier/show/:id                           controllers.Application.showSupplier(id: Long)
+GET     /supplier/insert                           controllers.Application.insertSupplier
+POST     /supplier/insert1                           controllers.Application.insertSupplier1
+GET     /supplier/bill/:id                           controllers.Application.billSupplier(id: Long)
+POST     /supplier/bill1/:id                           controllers.Application.billSupplier1(id: Long)
+GET     /supplier/update/:id                           controllers.Application.updateSupplier(id: Long)
+POST     /supplier/update1/:id                           controllers.Application.updateSupplier1(id: Long)
+
+GET     /notepad                           controllers.Application.notepad
+POST     /notepad                           controllers.Application.insertNotepad
+
+GET     /history                           controllers.Application.history
+
+GET     /fund                           controllers.Application.fund
+GET     /fund/history                           controllers.Application.fundhistory
+GET     /fund/bill                           controllers.Application.billFund
+POST     /fund/bill1                           controllers.Application.billFund1
+
+GET     /time                           controllers.Application.time
+
+GET     /tmp                           controllers.Application.tmp
+
+GET     /assets/img/*file               controllers.Application.img(file)
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)

@@ -1,0 +1,40 @@
+@(nav : String, form : Form[models.Pojos.Customer])
+
+@import models.Constant._
+@import models.Pojos._
+@import util.CommonUtil.textareaField1
+@import util.CommonUtil
+
+@main(title(nav), nav) {
+    <script>
+    post(function(){
+    	var cancel_insert = $("#cancel_insert");
+    	cancel_insert.click(function(e){
+    		window.location = "/customer";
+    	});
+    });
+    </script>
+    <div class="span9">
+	    <ul class="nav nav-pills">
+	    <li><a href="/customer">全部客户</a></li>
+	    <li class="disabled"><a href="/customer/insert">添加客户</a></li>
+	    </ul>
+	</div>
+	<div class="span9">
+	@helper.form(action = routes.Application.insertCustomer1) {
+	    @helper.inputText(form("name"), '_label -> "客户姓名")
+	    @views.html.select(
+                form("sex"), 
+                options1 = List(("0", "未知"), ("1", "男"), ("2", "女")),
+                '_label -> "性别", 
+                '_help -> " "
+            )
+	    @helper.inputText(form("mobile"), '_label -> "联系方式", '_help -> "多个号码以逗号分隔")
+	    <div class="actions">
+			<input type="submit" class="btn btn-primary" value="添 加">
+			<input id="cancel_insert" type="button" class="btn" value="取 消">
+		</div>
+	}
+	</div>
+	
+}

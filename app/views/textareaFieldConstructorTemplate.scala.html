@@ -1,0 +1,23 @@
+@(elements: views.html.helper.FieldElements, showlabel: Boolean)
+
+@import play.api.i18n._
+@import views.html.helper._
+
+@**************************************************
+* Generate input according twitter bootsrap rules *
+**************************************************@
+
+<div class="clearfix @elements.args.get('_class) @if(elements.hasErrors) {error}" id="@elements.args.get('_id).getOrElse(elements.id + "_field")">
+    @if(showlabel){<label for="@elements.id">@elements.label(elements.lang)</label>}
+    <div class="input">
+        @elements.input
+        @if(elements.hasErrors){
+        <!-- <span class="help-inline">@elements.errors(elements.lang).mkString(", ")</span> -->
+        }
+        @if(elements.hasErrors){
+        <span class="help-block alert alert-error">@elements.infos(elements.lang).mkString(", ")</span>
+        }else{
+        <span class="help-block">@Html(elements.infos(elements.lang).mkString(", "))</span>
+        }
+    </div>
+</div>

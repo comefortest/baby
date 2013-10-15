@@ -1,0 +1,70 @@
+@(nav : String, transactions : List[(models.Pojos.Transaction, List[models.Pojos.Circulation])], objectResolver: (Long => (Long, String)), goodsResolver: (Long => Pojos.Goods), pageIndex : Int, pageCount : Int, pagePrefix : String)
+
+@import models.Constant._
+@import models.Pojos._
+@import util._
+@import util.CommonUtil.textareaField0
+
+@main(title(nav), nav) {
+    <script>
+    post(function(){
+    	
+    });
+    </script>
+    <div class="span9" id="inputform">
+
+	</div>
+	@if(0 == transactions.length){
+	<div class="span9"><p class="well well-large">没有销售记录</p></div>
+	}else{
+		@for((trans, circulations) <- transactions){
+		<div class="span9 well" style="padding: 3px">
+		<table class="table table-hover table-striped table-bordered">
+		<thead><tr>
+		<th>客户</th>
+		<th style="text-align: right;">计算金额</th>
+		<th style="text-align: right;">应付金额</th>
+		<th style="text-align: right;">实付金额</th>
+		<th>使用积分</th>
+		<th>奖励积分</th>
+		<th>销售时间</th>
+		<th>备注</th>
+		<!-- <th>&nbsp;</th> -->
+		</tr></thead>
+		<tbody>
+		<tr>
+		<td>@objectResolver(trans.objectId)._2</td>
+		<td style="text-align: right;">¥@util.CommonUtil.format(trans.calctotalprice/100.0)</td>
+		<td style="text-align: right;">¥@util.CommonUtil.format(trans.totalprice/100.0)</td>
+		<td style="text-align: right;">¥@util.CommonUtil.format(trans.actualmoney/100.0)</td>
+		<td>@trans.paycredit</td>
+		<td>@trans.rewardcredit</td>
+		<td>@CommonUtil.format1(trans.opTime)</td>
+		<td>@trans.comment</td>
+		<!-- <td>
+			<a href="#">编辑</a>&nbsp;&nbsp;
+		</td> -->
+		</tr>
+		</tbody>
+		</table>
+		<table class="table table-hover table-striped table-bordered">
+		<thead><tr>
+		<th>商品</th>
+		<th>销售数量</th>
+		<th>当时的价格</th>
+		</tr></thead>
+		<tbody>
+		@for(circulation <- circulations){
+		<tr>
+		<td>@goodsResolver(circulation.goodsId).goodsName</td>
+		<td>@circulation.amount</td>
+		<td>¥@util.CommonUtil.format(circulation.unitprice/100.0)</td>
+		</tr>
+		}
+		</tbody>
+		</table>
+		</div>
+		}
+		<div class="span9">@pager(pageCount, pageIndex, pagePrefix, "goto")</div>
+	}
+}

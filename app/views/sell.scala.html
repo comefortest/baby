@@ -1,0 +1,144 @@
+@(nav : String, goodses : List[models.Pojos.Goods], myform: Form[(models.Pojos.Transaction, Seq[models.Pojos.Circulation])], objectId: Long, objectName: String)
+
+@import models.Constant._
+@import models.Pojos._
+@import util.CommonUtil.textareaField1
+@import util.CommonUtil
+@import helper._
+
+@circulation(field: Field, className: String = "circulation") = {
+<div class="well @className" style="margin-left: 0px; width:514px">
+<a class="removeCirculation btn danger pull-right">删除本商品</a>
+@views.html.select(
+                field("goodsId"), 
+                options1 = (for(goods <- goodses)
+                	yield (goods.id.toString, goods.goodsName + ", 现在单价: ¥" + util.CommonUtil.format(goods.unitprice/100.0) + ", 现有库存: " + goods.amount)), 
+                '_default -> (0, "请选择商品"),
+                '_label -> "商品", 
+                '_help -> "商品不存在时, 请先在[商品/库存]中添加", 
+                'style -> "width:auto"
+            )
+@helper.inputText(field("amount"), '_label -> "购买量", '_help -> {if(field("amount").hasErrors)"请填写购买量" else ""})
+</div>
+}
+
+@main(title(nav), nav) {
+    <script>
+    post(function(){
+    	@if(myform.hasErrors) {
+		emite("请纠正销售单中的错误!");
+        };
+        var index = -1;
+    	$("#selectCustomer").click(function(e){
+    	    $('#myModal').modal({
+    	    	remote: "/customer/snippet?r=" + Math.random()
+			});
+    	    if(-1 == index){index = 1;}
+    		return false;
+    	});
+    	function prev(){
+    		if(1 >= index){
+    			index = 1;
+    			return "/customer/snippet?r=" + Math.random();
+    		}else{
+    			index = index - 1;
+    			return "/customer/snippet?index=" + index + "&r=" + Math.random();
+    		}
+    	}
+    	function next(){
+    		index = index + 1;
+    		return "/customer/snippet?index=" + index + "&r=" + Math.random();
+    	}
+    	$("#prevCustomer").click(function(e){
+    		$('.modal-body').load(prev());
+    		return false;
+    	});
+    	$("#nextCustomer").click(function(e){
+    	    $('.modal-body').load(next());
+    		return false;
+    	});
+    	$("#customerSelected").click(function(e){
+    		var selected = $('input[name=select_customer]:checked', '#myModal');
+    		var id = selected.val();
+    		var name = selected.attr("customer_name");
+    		$("#objectId").val(id);
+    		$("#objectId_1").text(name);
+    		$('#myModal').modal('hide');
+    	});
+    });
+    </script>
+<div class="span9"><div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	<h3 id="myModalLabel">请选择客户</h3>
+	</div>
+	<div class="modal-body">
+	<p>请选择客户</p>
+	</div>
+	<div class="modal-footer" style="text-align: center">
+	<ul class="pager" style="display: inline-block; margin: 0px">
+	  <li><a href="#" id="prevCustomer">上一页</a></li>
+	  <li><a href="#" id="nextCustomer">下一页</a></li>
+	</ul>
+	<button class="btn btn-primary pull-right" style="margin-left: 8px" id="customerSelected">确 定</button>
+	<button class="btn pull-right" data-dismiss="modal" aria-hidden="true">关 闭</button>
+	</div>
+</div></div>
+<div class="span9">
+@helper.form(action = routes.Application.sell1) {
+	<div class="clearfix  " id="objectId_field">
+    <label for="objectId">客户</label>
+    <div class="input">
+    <input type="hidden" id="objectId" name="objectId" value="@objectId" >
+    <span id="objectId_1" class="input-xlarge uneditable-input" style="width: 206px" data-toggle="tooltip" title="请在右侧选择客户">@objectName</span>
+    <!-- <a id="selectCustomer" style="padding: 0px" class="btn btn-link btn-large" data-toggle="modal" href="#myModal" role="button">选择...</a> -->
+    <a id="selectCustomer" style="padding: 0px" class="btn btn-link btn-large" href="#" role="button">选择...</a>
+    <span class="help-block">客户不存在时, 请先在[客户]中添加</span>
+    </div>
+	</div>
+	@helper.inputText(myform("paycredit"), '_label -> "使用积分(点)", '_help -> "本次销售, 客户花掉的积分点数")
+	@helper.inputText(myform("rewardcredit"), '_label -> "奖励积分(点)", '_help -> "本次销售, 奖励给客户的积分点数")
+	@helper.inputText(myform("totalprice"), '_label -> "应付金额(单位 : 分)", '_help -> "优惠之后, 客户需要支付给供货商多少金额, 以分为单位")
+	@helper.inputText(myform("actualmoney"), '_label -> "实付金额(单位 : 分)", '_help -> "实付金额比应付金额小时, 表明欠款! 系统将自动计入[账务总览], 注意: 以分为单位")
+	@helper.textarea(myform("comment"), 'style -> "width:554px", 'rows -> 4, '_label -> "销售备注", 'class -> "input-block-level", 'placeholder -> "请输入销售备注...")
+
+	@repeat(myform("circulations"), min = 1){c => 
+		@circulation(c)
+	}
+	@circulation(myform("circulations[x]"), className = "circulation_template myhidden")
+	
+	<div class="manage">
+	    <a class="addCirculation btn success">添加商品</a>
+	</div>
+	<br>
+	<div class="actions">
+		<input type="submit" class="btn btn-primary" value="确 定">
+	</div>
+}
+</div>
+<script>
+var removeCirculation = function(e) {
+    $(this).parents('.circulation').remove();
+    renumber();
+};
+$('.removeCirculation').click(removeCirculation);
+$('.addCirculation').click(function(e) {
+    var template = $('.circulation_template');
+    template.before('<div class="well circulation" style="margin-left: 0px; width:514px">' + template.html() + '</div>');
+    renumber();
+});
+var renumber = function() {
+    $('.circulation').each(function(i) {
+    	$('input', this).each(function() {
+            $(this).attr('name', $(this).attr('name').replace(/circulations\[.+?\]/g, 'circulations[' + i + ']'))
+        });
+    	$('select', this).each(function() {
+            $(this).attr('name', $(this).attr('name').replace(/circulations\[.+?\]/g, 'circulations[' + i + ']'))
+        });
+    	$('.removeCirculation', this).each(function() {
+            $(this).click(removeCirculation);
+        });
+    });
+}
+</script>
+}

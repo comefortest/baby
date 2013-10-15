@@ -1,0 +1,41 @@
+@(nav : String, form : Form[models.Pojos.Goods])
+
+@import models.Constant._
+@import models.Pojos._
+@import util.CommonUtil.textareaField1
+@import util.CommonUtil
+
+@main(title(nav), nav) {
+    <script>
+    post(function(){
+    	var cancel_insert = $("#cancel_insert");
+    	cancel_insert.click(function(e){
+    		window.location = "/goods";
+    	});
+    });
+    </script>
+    <div class="span9">
+	    <ul class="nav nav-pills" style="margin-bottom:0px">
+	    <li><a href="/goods">全部商品</a></li>
+	    <li class="disabled"><a href="/goods/insert">添加商品</a></li>
+	    </ul>
+	</div>
+	<div class="span9">
+	@helper.form(action = routes.Application.insertGoods1) {
+	    @helper.inputText(form("goodsName"), '_label -> "商品名称")
+	    @views.html.select(
+                form("brand"), 
+                options1 = (for(x <- models.Pojos.selectBrand)yield (x.id.toString, x.brandName)).toList.sortWith((x, y) => x._1.toInt < y._1.toInt),
+                '_default -> (0, "请选择品牌"),
+                '_label -> "品牌", 
+                '_help -> "若品牌不存在, 请先在[品牌]中添加品牌"
+            )
+	    @helper.inputText(form("unitprice"), '_label -> "单价(单位 : 分)", '_help -> "单位是分, 请仔细填写")
+	    <div class="actions">
+			<input type="submit" class="btn btn-primary" value="添 加">
+			<input id="cancel_insert" type="button" class="btn" value="取 消">
+		</div>
+	}
+	</div>
+	
+}

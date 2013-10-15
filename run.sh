@@ -1,0 +1,1 @@
+./start -Dconfig.file=/opt/wok/baby-1.0-SNAPSHOT/application-prod.conf -Dhttp.port=9024 -Xms128M -Xmx512m -server

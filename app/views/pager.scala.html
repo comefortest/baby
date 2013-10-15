@@ -1,0 +1,34 @@
+@(pageCount : Int, pageIndex : Int, dstPrefix : String, goto : String)
+
+@import util._
+@defining(CommonUtil.pager(pageCount, pageIndex, 6)){interval =>
+	<div class="pagination pagination-centered">
+	<ul>
+		@if(1 < interval.head){
+		<li><a href="@(dstPrefix + (interval.head - 1).toString)">&laquo;</a></li>
+		}
+		@for(i <- interval){
+		<li @if(i == pageIndex){class="active"}><a href="@(dstPrefix + i.toString)">@i</a></li>
+		}
+		@if(pageCount > 6){
+		<li><a href="@(dstPrefix + (interval.last + 1).toString)">...&nbsp;@pageCount</a></li>
+		<li><a style="padding-top:3px; padding-bottom: 3px"><input id="@goto" class="text-center" type="text" value="1" style="width:38px; margin:0px; padding:0px;">/@pageCount</a></li>
+		
+		}
+		@if(pageCount > interval.last){
+		<li><a href="@(dstPrefix + (pageCount).toString)">&raquo;</a></li>
+		}
+	</ul>
+	</div>
+	<script>
+	post(function(){
+    	$("#@goto").keydown(function(e){
+    		var curkey = e.which; 
+    		if(curkey == 13){
+    			window.location = "@Html(dstPrefix)" + $("#@goto").val();
+    			return false; 
+    		} 
+    	});
+    });
+	</script>
+}

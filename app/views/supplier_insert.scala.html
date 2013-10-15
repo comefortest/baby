@@ -1,0 +1,35 @@
+@(nav : String, form : Form[models.Pojos.Supplier])
+
+@import models.Constant._
+@import models.Pojos._
+@import util.CommonUtil.textareaField1
+@import util.CommonUtil
+
+@main(title(nav), nav) {
+    <script>
+    post(function(){
+    	var cancel_insert = $("#cancel_insert");
+    	cancel_insert.click(function(e){
+    		window.location = "/supplier";
+    	});
+    });
+    </script>
+    <div class="span9">
+	    <ul class="nav nav-pills">
+	    <li><a href="/supplier">全部供货商</a></li>
+	    <li class="disabled"><a href="/supplier/insert">添加供货商</a></li>
+	    </ul>
+	</div>
+	<div class="span9">
+	@helper.form(action = routes.Application.insertSupplier1) {
+	    @helper.inputText(form("supplierName"), '_label -> "供货商名称")
+	    @helper.inputText(form("linkman"), '_label -> "联系人")
+	    @helper.inputText(form("contact"), '_label -> "联系方式")
+	    <div class="actions">
+			<input type="submit" class="btn btn-primary" value="添 加">
+			<input id="cancel_insert" type="button" class="btn" value="取 消">
+		</div>
+	}
+	</div>
+	
+}

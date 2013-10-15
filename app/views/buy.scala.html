@@ -1,0 +1,88 @@
+@(nav : String, goodses : List[models.Pojos.Goods], objects : List[(String, String)], myform: Form[(models.Pojos.Transaction, Seq[models.Pojos.Circulation])])
+
+@import models.Constant._
+@import models.Pojos._
+@import util.CommonUtil.textareaField1
+@import util.CommonUtil
+@import helper._
+
+@circulation(field: Field, className: String = "circulation") = {
+<div class="well @className" style="margin-left: 0px; width:514px">
+<a class="removeCirculation btn danger pull-right">删除本商品</a>
+@views.html.select(
+                field("goodsId"), 
+                options1 = (for(goods <- goodses)
+                	yield (goods.id.toString, goods.goodsName + ", 现在单价: ¥" + util.CommonUtil.format(goods.unitprice/100.0) + ", 现有库存: " + goods.amount)), 
+                '_default -> (0, "请选择商品"),
+                '_label -> "商品", 
+                '_help -> "商品不存在时, 请先在[商品/库存]中添加", 
+                'style -> "width:auto"
+            )
+@helper.inputText(field("amount"), '_label -> "进货量", '_help -> {if(field("amount").hasErrors)"请填写进货量" else ""})
+</div>
+}
+
+@main(title(nav), nav) {
+    <script>
+    post(function(){
+    	@if(myform.hasErrors) {
+		emite("请纠正进货单中的错误!");
+        }
+    });
+    </script>
+<div class="span9">
+@helper.form(action = routes.Application.buy1) {
+	@views.html.select(
+	                myform("objectId"), 
+	                options1 = objects, 
+	                '_default -> (0, "请选择供货商"),
+	                '_label -> "供货商", 
+	                '_help -> "供货商不存在时, 请先在[供货商]中添加", 
+	                'style -> "width:auto"
+	            )
+	@helper.inputText(myform("paycredit"), '_label -> "使用积分(点)", '_help -> "本次进货, 店铺花掉的积分点数")
+	@helper.inputText(myform("rewardcredit"), '_label -> "奖励积分(点)", '_help -> "本次进货, 奖励给店铺的积分点数")
+	@helper.inputText(myform("totalprice"), '_label -> "应付金额(单位 : 分)", '_help -> "优惠之后, 本次进货需要支付给供货商多少金额, 以分为单位")
+	@helper.inputText(myform("actualmoney"), '_label -> "实付金额(单位 : 分)", '_help -> "实付金额比应付金额小时, 表明欠款! 系统将自动计入[账务总览]. 注意: 以分为单位")
+	@helper.textarea(myform("comment"), 'style -> "width:554px", 'rows -> 4, '_label -> "进货备注", 'class -> "input-block-level", 'placeholder -> "请输入进货备注...")
+
+	@repeat(myform("circulations")){c => 
+		@circulation(c)
+	}
+	@circulation(myform("circulations[x]"), className = "circulation_template myhidden")
+	
+	<div class="manage">
+	    <a class="addCirculation btn success">添加商品</a>
+	</div>
+	<br>
+	<div class="actions">
+		<input type="submit" class="btn btn-primary" value="确 定">
+	</div>
+}
+</div>
+<script>
+var removeCirculation = function(e) {
+    $(this).parents('.circulation').remove();
+    renumber();
+};
+$('.removeCirculation').click(removeCirculation);
+$('.addCirculation').click(function(e) {
+    var template = $('.circulation_template');
+    template.before('<div class="well circulation" style="margin-left: 0px; width:514px">' + template.html() + '</div>');
+    renumber();
+});
+var renumber = function() {
+    $('.circulation').each(function(i) {
+    	$('input', this).each(function() {
+            $(this).attr('name', $(this).attr('name').replace(/circulations\[.+?\]/g, 'circulations[' + i + ']'))
+        });
+    	$('select', this).each(function() {
+            $(this).attr('name', $(this).attr('name').replace(/circulations\[.+?\]/g, 'circulations[' + i + ']'))
+        });
+    	$('.removeCirculation', this).each(function() {
+            $(this).click(removeCirculation);
+        });
+    });
+}
+</script>
+}

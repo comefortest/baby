@@ -1,0 +1,70 @@
+@(nav : String, customer : models.Pojos.Customer, changes : List[models.Pojos.Change], form : Form[models.Pojos.Change])
+
+@import models.Constant._
+@import models.Pojos._
+@import util.CommonUtil
+@import util.CommonUtil.textareaField1
+
+@main(title(nav), nav) {
+    <script>
+    post(function(){
+    	
+    });
+    </script>
+    <div class="span9">
+	    <ul class="nav nav-pills" style="margin-bottom:0px">
+	    <li><a href="/customer">全部客户</a></li>
+	    <li><a href="/customer/insert">添加客户</a></li>
+	    </ul>
+	</div>
+	<div class="span9">
+	<h3 style="display:inline; padding:0px; margin:0px; vertical-align:bottom; padding-left:8px">@customer.name</h5>
+	<ul class="nav nav-pills" style="margin:0px; display:inline-block; padding:0px; vertical-align:bottom">
+	<li><a href="@routes.Application.sellhistory(customerId=customer.id)">购物历史</a></li>
+    <li><a href="@routes.Application.showCustomer(customer.id)">详情</a></li>
+    <li class="disabled"><a href="@routes.Application.billCustomer(customer.id)">变更帐务</a></li>
+    <li><a href="@routes.Application.updateCustomer(customer.id)">编辑</a></li>
+    </ul>
+	</div>
+	<div class="span9">
+	@helper.form(action = routes.Application.billCustomer1(customer.id)) {
+		@helper.inputText(form("money"), '_label -> "款项(单位 : 分)", '_help -> "款项以[分]为单位, 正数表示店铺给客户返款, 负数表示客户付款给店铺. <br>该项会自动计算到店铺总账务中")
+		@helper.inputText(form("credit"), '_label -> "购物积分(点)", '_help -> "正数表示增加客户积分, 负数表示减少客户积分")
+		@views.html.select(
+                form("cause"), 
+                options1 = (for(x <- models.Constant.SupplierChangeCause if x._1 != 0)yield (x._1.toString, x._2)).toList.sortWith((x, y) => x._1.toInt < y._1.toInt),
+                '_default -> (0, "请选择变更原因"),
+                '_label -> "变更原因", 
+                '_help -> "变更原因选择[其他]时, 请务必在下面的[备注]内详细说明"
+            )
+		@helper.inputText(form("remark"), '_label -> "备注(必填)", '_help -> "补充说明本次帐务变更")
+	    <div class="actions">
+			<input type="submit" class="btn btn-primary" value="保 存">
+		</div>
+	}
+	</div>
+	@if(0 == changes.length){
+	<div class="span9"><p class="well">没有账务历史数据</p></div>
+	}else{
+		<div class="span9"><table class="table table-hover table-striped">
+		<thead><tr>
+		<th>购物积分</th>
+		<th>款项</th>
+		<th>变更时间</th>
+		<th>变更原因</th>
+		<th>备注</th>
+		</tr></thead>
+		<tbody>
+		@for(change <- changes){
+		<tr>
+		<td>@change.credit</td>
+		<td>¥@util.CommonUtil.format(change.money/100.0)</td>
+		<td>@CommonUtil.format1(change.opTime)</td>
+		<td>@models.Constant.CustomerChangeCause(change.cause)</td>
+		<td>@change.remark</td>
+		</tr>
+		}
+		</tbody>
+		</table></div>
+	}
+}

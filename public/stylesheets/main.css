@@ -1,0 +1,58 @@
+body {
+	padding-top: 90px;
+	padding-bottom: 40px;
+}
+
+.icon-white,
+.nav-tabs > .active > a > [class^="icon-"],
+.nav-tabs > .active > a > [class*=" icon-"]
+{
+  background-image: url("../img/glyphicons-halflings-white.png");
+}
+
+.nav-tabs > .active > a,
+.nav-tabs > .active > a:hover,
+.nav-tabs > .active > a:focus {
+  color: #ffffff;
+  background-color: #0088cc;
+}
+
+.bs-docs-sidenav .icon-chevron-right {
+  float: right;
+  margin-right: -6px;
+  margin-top: 2px;
+  opacity: 0.25;
+}
+
+.bs-docs-sidenav a:hover .icon-chevron-right {
+  opacity: 0.5;
+}
+
+.bs-docs-sidenav .active .icon-chevron-right, .bs-docs-sidenav .active a:hover .icon-chevron-right {
+  background-image: url("../img/glyphicons-halflings-white.png");
+  opacity: 1;
+}
+
+.table th,
+.table td {
+  padding: 8px;
+  line-height: 20px;
+  text-align: left;
+  vertical-align: middle;
+  border-top: 1px solid #dddddd;
+}
+
+.nav-tabs > li > a,
+.nav-pills > li > a {
+  padding-right: 8px;
+  padding-left: 8px;
+  margin-right: 2px;
+  line-height: 14px;
+}
+h3{
+	padding-left: 8px;
+}
+
+.myhidden {
+	display: none;
+}
