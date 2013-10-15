@@ -1,0 +1,28 @@
+This is your new Play 2.1 application
+=====================================
+
+This file will be packaged with your application, when using `play dist`.
+
+
+javaSource and scalaSource are inputs to unmanagedSourceDirectories. 
+By default, sbt includes src/main/scala and src/main/java in its list of unmanaged source directories. 
+For Java-only projects, the unnecessary Scala directories can be ignored by modifying unmanagedSourceDirectories:
+// Include only src/main/java in the compile configuration
+unmanagedSourceDirectories in Compile <<= Seq(javaSource in Compile).join
+
+// Include only src/test/java in the test configuration
+unmanagedSourceDirectories in Test <<= Seq(javaSource in Test).join
+
+Classpaths, sources, and resources are separated into two main categories: unmanaged and managed. 
+Unmanaged files are manually created files that are outside of the control of the build. 
+They are the inputs to the build. 
+Managed files are under the control of the build. 
+These include generated sources and resources as well as resolved and retrieved dependencies and compiled classes.
+
+sourceGenerators in Compile <+= sourceManaged in Compile map { dir =>
+  val file = dir / "demo" / "Test.scala"
+  IO.write(file, """object Test extends App { println("Hi") }""")
+  Seq(file)
+}
+
+set unmanagedSourceDirectories in Compile <+= baseDirectory( _ /"src"/"java" )

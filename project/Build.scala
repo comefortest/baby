@@ -15,6 +15,7 @@ object ApplicationBuild extends Build {
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
     // Add your own project settings here
+    scalacOptions ++= Seq("-encoding", "UTF-8"),
     templatesImport += "_root_.models.Pojos._")
 
 }
