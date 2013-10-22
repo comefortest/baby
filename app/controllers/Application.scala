@@ -99,15 +99,15 @@ object Application extends Controller {
     }
     val count = countSell
     val factor = 10
-    val pageCount = count / factor + (if (0 < count % factor) 1 else 0)
-    val pageIndex = toInt(request.getQueryString(INDEX_KEY).getOrElse(null), 1)
+    val pagerCount = count / factor + (if (0 < count % factor) 1 else 0)
+    val pagerIndex = toInt(request.getQueryString(INDEX_KEY).getOrElse(null), 1)
     Ok(views.html.sell_history("sellhistory", transactions,
       x => x match {
         case 0 => (0, "未知客户")
         case x => (x, Pojos.selectCustomer(x).get.name)
       },
       x => Pojos.selectGoods(x).get,
-      pageIndex, pageCount, pagePrefix(request)))
+      pagerIndex, pagerCount, pagerPrefix(request)))
   }
   def sell = Action { implicit request =>
     val goodses = TransactionManager.wrap {
@@ -149,9 +149,9 @@ object Application extends Controller {
     }
     val count = countSell
     val factor = 10
-    val pageCount = count / factor + (if (0 < count % factor) 1 else 0)
-    val pageIndex = toInt(request.getQueryString(INDEX_KEY).getOrElse(null), 1)
-    Ok(views.html.buy_history("buyhistory", transactions, x => Pojos.selectSupplier(x).get, x => Pojos.selectGoods(x).get, pageIndex, pageCount, pagePrefix(request)))
+    val pagerCount = count / factor + (if (0 < count % factor) 1 else 0)
+    val pagerIndex = toInt(request.getQueryString(INDEX_KEY).getOrElse(null), 1)
+    Ok(views.html.buy_history("buyhistory", transactions, x => Pojos.selectSupplier(x).get, x => Pojos.selectGoods(x).get, pagerIndex, pagerCount, pagerPrefix(request)))
   }
   def buy = Action { implicit request =>
     val (suppliers, goodses) = TransactionManager.wrap {
@@ -289,9 +289,8 @@ object Application extends Controller {
     }
     val count = countCustomer
     val factor = 10
-    val pageCount = count / factor + (if (0 < count % factor) 1 else 0)
-    val pageIndex = toInt(request.getQueryString(INDEX_KEY).getOrElse(null), 1)
-    Ok(views.html.customer("customer", select((pageIndex - 1) * factor, factor), pageIndex, pageCount, pagePrefix(request), all, liked1))
+    val index = pagerIndex
+    Ok(views.html.customer("customer", select((index - 1) * factor, factor), index, pagerCount(count, factor), pagerPrefix, all, liked1))
   }
   def customerSnippet(liked: Option[String]) = Action { implicit request =>
     val (select, all) = liked match {
@@ -300,9 +299,9 @@ object Application extends Controller {
     }
     val count = countCustomer
     val factor = 10
-    val pageCount = count / factor + (if (0 < count % factor) 1 else 0)
-    val pageIndex = toInt(request.getQueryString(INDEX_KEY).getOrElse(null), 1)
-    Ok(views.html.customer_snippet(select((pageIndex - 1) * factor, factor)))
+    val pagerCount = count / factor + (if (0 < count % factor) 1 else 0)
+    val pagerIndex = toInt(request.getQueryString(INDEX_KEY).getOrElse(null), 1)
+    Ok(views.html.customer_snippet(select((pagerIndex - 1) * factor, factor)))
   }
   def insertCustomer = Action { implicit request =>
     Ok(views.html.customer_insert("customer", customerForm))
@@ -362,29 +361,31 @@ object Application extends Controller {
 
   /**********pager**********/
   val INDEX_KEY = "index"
-  def pagePrefix(request: Request[AnyContent]) = request.path + "?" +
+  def pagerPrefix(implicit request: Request[_]) = request.path + "?" +
     (for (one <- request.queryString; one1 <- one._2 if INDEX_KEY != one._1) yield one._1 + "=" + one1).mkString("&") +
     "&" + INDEX_KEY + "="
+  def pagerIndex(implicit request: Request[_]) = toInt(request.getQueryString(INDEX_KEY).getOrElse(null), 1)
+  @inline def pagerCount(count: Int, factor: Int) = count / factor + (if (0 < count % factor) 1 else 0)
   /**********pager**********/
 
   def notepad = Action { implicit request =>
     val count = countNote
     val factor = 5
-    val pageCount = count / factor + (if (0 < count % factor) 1 else 0)
-    val pageIndex = toInt(request.getQueryString(INDEX_KEY).getOrElse(null), 1)
-    Ok(views.html.notepad("notepad", notepadForm, selectNote((pageIndex - 1) * factor, factor).map(x => new ReadableNote(x)), pageIndex, pageCount, pagePrefix(request)))
+    val pagerCount = count / factor + (if (0 < count % factor) 1 else 0)
+    val pagerIndex = toInt(request.getQueryString(INDEX_KEY).getOrElse(null), 1)
+    Ok(views.html.notepad("notepad", notepadForm, selectNote((pagerIndex - 1) * factor, factor).map(x => new ReadableNote(x)), pagerIndex, pagerCount, pagerPrefix(request)))
   }
   def insertNotepad = Action { implicit request =>
     val count = countNote
     val factor = 5
-    val pageCount = count / factor + (if (0 < count % factor) 1 else 0)
-    val pageIndex = toInt(request.getQueryString(INDEX_KEY).getOrElse(null), 1)
+    val pagerCount = count / factor + (if (0 < count % factor) 1 else 0)
+    val pagerIndex = toInt(request.getQueryString(INDEX_KEY).getOrElse(null), 1)
 
     notepadForm.bindFromRequest.fold(
-      errors => BadRequest(views.html.notepad("notepad", errors, selectNote((pageIndex - 1) * factor, factor).map(x => new ReadableNote(x)), pageIndex, pageCount, pagePrefix(request))),
+      errors => BadRequest(views.html.notepad("notepad", errors, selectNote((pagerIndex - 1) * factor, factor).map(x => new ReadableNote(x)), pagerIndex, pagerCount, pagerPrefix(request))),
       content => {
         val id = insertNote(Note(0, content.trim, System.currentTimeMillis(), 0)).id
-        Ok(views.html.notepad("notepad", notepadForm, selectNote((pageIndex - 1) * factor, factor).map(x => new ReadableNote(x)), pageIndex, pageCount, pagePrefix(request)))
+        Ok(views.html.notepad("notepad", notepadForm, selectNote((pagerIndex - 1) * factor, factor).map(x => new ReadableNote(x)), pagerIndex, pagerCount, pagerPrefix(request)))
       })
   }
   def history = mytodo("history")
