@@ -9,7 +9,7 @@ object CommonUtil {
   def format1(time: Long) = formator1.format(new java.util.Date(time));
   implicit def now = formator.format(new java.util.Date())
 
-  implicit val decimalformator = new java.text.DecimalFormat("#,###0.00");
+  implicit val decimalformator = new java.text.DecimalFormat("#,###.00");
   def format(d: Double) = decimalformator format d
 
   class PowWrapper[T](seed: T) {
